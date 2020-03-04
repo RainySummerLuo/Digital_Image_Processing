@@ -7,8 +7,8 @@
 
 int lab1_2_1(char *filename);
 
-int lab1_2_2();
+int lab1_2_2(char *filename);
 
-int lab1_2_3();
+int lab1_2_3(char *filename);
 
 #endif //LAB_LAB1_HPP

@@ -2,48 +2,45 @@
 // Created by rainy on 2020/3/4.
 //
 
-#include <opencv2/opencv.hpp>
+#include "io.h"
 
 using namespace cv;
 
 int lab1_2_1(char *filename) {
-    printf("Hello world\n");
+    printf("OpenCV: Hello, world!\n");
     Mat image = imread(filename);
     if (image.empty())
     {
         std::cout << "Hey! Can't read the image!" << std::endl;
         system("PAUSE");
-        return EXIT_FAILURE;
-    }
-    namedWindow("My Image");
-    imshow("My Image", image);
-    waitKey(5000);
-    return EXIT_SUCCESS;
-}
-
-int lab1_2_2() {
-    // ��ȡԴͼ��ת��Ϊ�Ҷ�ͼ��
-    Mat srcImage = cv::imread(R"(.\bh3.png)");
-    // �ж��ļ��Ƿ������ȷ
-    if (!srcImage.data)
         return 1;
-    // ͼ����ʾ
-    imshow("srcImage", srcImage);
-    // �ȴ����̼���
-    waitKey(0);
+    }
+    namedWindow("Lena Image");
+    imshow("Lena Image", image);
+    waitKey(1000);
     return 0;
 }
 
-int lab1_2_3() {
-    // ��ȡԴͼ��ת��Ϊ�Ҷ�ͼ��
-    IplImage* img;
-    img = cvvLoadImage(".\bh3.png");
-    // �ж��ļ��Ƿ������ȷ
-    if (!img)
+int lab1_2_2(char *filename) {
+    Mat srcImage = cv::imread(filename);
+    if (!srcImage.data)
         return 1;
-    // ͼ����ʾ
-    cvvShowImage("srcImage", img);
-    // �ȴ����̼���
-    waitKey(0);
+    Mat greyImage;
+    cvtColor(srcImage, greyImage, COLOR_BGR2GRAY);
+    namedWindow("Lena Image - Grey 1");
+    imshow("Lena Image - Grey 1", greyImage);
+    waitKey(1000);
+    return 0;
+}
+
+int lab1_2_3(char *filename) {
+    IplImage* srcImg;
+    srcImg = cvvLoadImage(filename);
+    if (!srcImg)
+        return 1;
+    IplImage *greyImage = cvCreateImage(cvGetSize(srcImg), srcImg->depth, srcImg->alphaChannel);
+    cvCvtColor(srcImg, greyImage, CV_BGR2GRAY);
+    cvvShowImage("Lena Image - Grey 2", greyImage);
+    waitKey(3000);
     return 0;
 }
