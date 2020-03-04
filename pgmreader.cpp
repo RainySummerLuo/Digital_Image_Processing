@@ -106,10 +106,11 @@ Image *ReadPNMImage(char *filename) {
     }
     */
 
-    if (image->Type == 1)
+    if (image->Type == 1) {
         size = Width * Height;
-    else if (image->Type == 2)
+    } else if (image->Type == 2) {
         size = Width * Height * 3;
+    }
     image->data = (unsigned char *) malloc(size);
     image->Width = Width;
     image->Height = Height;
@@ -135,8 +136,8 @@ Image *ReadPNMImage(char *filename) {
 
     /*-----  Debug  ------*/
 
-    if (image->Type == 1)printf("..Image Type PGM\n");
-    else printf("..Image Type PPM Color\n");
+    if (image->Type == 1) { printf("..Image Type PGM\n"); }
+    else { printf("..Image Type PPM Color\n"); }
     /*
     printf("Width %d\n", Width);
     printf("Height %d\n",Height);

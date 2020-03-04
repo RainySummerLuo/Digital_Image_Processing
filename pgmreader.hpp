@@ -11,8 +11,11 @@ typedef struct Image {
 } Image;
 
 void SavePNMImage(Image *, char *);
+
 Image *SwapImage(Image *);
+
 Image *ReadPNMImage(char *);
+
 Image *CreateNewImage(Image *, char *comment);
 
 #endif //LAB_PGMREADER_HPP
