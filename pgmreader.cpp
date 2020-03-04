@@ -1,25 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <malloc.h>
-#include <ctype.h>
+#include <cstring>
+#include <cctype>
 
-#include "proto.h"
-
-void SavePNMImage(Image *, char *);
-
-Image *SwapImage(Image *);
-
-Image *ReadPNMImage(char *);
-
-Image *CreateNewImage(Image *, char *comment);
-
-int TestReadImage(char *, char *);
-
-int main(int argc, char **argv) {
-    TestReadImage(argv[1], argv[2]);
-
-    return (0);
-}
+#include "io.hpp"
+#include "proto.hpp"
 
 int TestReadImage(char *filename, char *outfilename) {
     Image *image;
@@ -34,15 +20,16 @@ int TestReadImage(char *filename, char *outfilename) {
 
 Image *SwapImage(Image *image) {
     unsigned char *tempin, *tempout;
-    int i, size;
+    int i, size = 0;
     Image *outimage;
 
-    outimage = CreateNewImage(image, "#testing Swap");
+    char comment[] = "#testing Swap";
+    outimage = CreateNewImage(image, comment);
     tempin = image->data;
     tempout = outimage->data;
 
-    if (image->Type == GRAY) { size = image->Width * image->Height; }
-    else if (image->Type == COLOR) { size = image->Width * image->Height * 3; }
+    if (image->Type == 1) { size = image->Width * image->Height; }
+    else if (image->Type == 2) { size = image->Width * image->Height * 3; }
 
     for (i = 0; i < size; i++) {
         *tempout = *tempin;
@@ -54,12 +41,11 @@ Image *SwapImage(Image *image) {
 
 /*******************************************************************************/
 //Read PPM image and return an image pointer
-**************************************************************************/
-
+/**************************************************************************/
 Image *ReadPNMImage(char *filename) {
     char ch;
     int maxval, Width, Height;
-    int size, num, j;
+    int size = 0, num, j;
     FILE *fp;
     Image *image;
     int num_comment_lines = 0;
@@ -67,7 +53,7 @@ Image *ReadPNMImage(char *filename) {
 
     image = (Image *) malloc(sizeof(Image));
 
-    if ((fp = fopen(filename, "r")) == NULL) {
+    if ((fp = fopen(filename, "rb")) == nullptr) {
         printf("Cannot open %s\n", filename);
         exit(0);
     }
@@ -84,8 +70,8 @@ Image *ReadPNMImage(char *filename) {
     }
 
     if (ch == '5') {
-        image->Type = GRAY;  // Gray (pgm)
-    } else if (ch == '6') { image->Type = COLOR; }  //Color (ppm)
+        image->Type = 1;  // Gray (pgm)
+    } else if (ch == '6') { image->Type = 2; }  //Color (ppm)
     /* skip comments */
     ch = getc(fp);
     j = 0;
@@ -115,14 +101,14 @@ Image *ReadPNMImage(char *filename) {
 
     /*
     if (maxval != 255){
-      printf("image is not true-color (24 bit); read failed");
-      exit(0);
+    printf("image is not true-color (24 bit); read failed");
+    exit(0);
     }
     */
 
-    if (image->Type == GRAY)
+    if (image->Type == 1)
         size = Width * Height;
-    else if (image->Type == COLOR)
+    else if (image->Type == 2)
         size = Width * Height * 3;
     image->data = (unsigned char *) malloc(size);
     image->Width = Width;
@@ -149,7 +135,7 @@ Image *ReadPNMImage(char *filename) {
 
     /*-----  Debug  ------*/
 
-    if (image->Type == GRAY)printf("..Image Type PGM\n");
+    if (image->Type == 1)printf("..Image Type PGM\n");
     else printf("..Image Type PPM Color\n");
     /*
     printf("Width %d\n", Width);
@@ -162,13 +148,13 @@ Image *ReadPNMImage(char *filename) {
 
 void SavePNMImage(Image *temp_image, char *filename) {
     int num, j;
-    int size;
+    int size = 0;
     FILE *fp;
     //char comment[100];
 
 
     printf("Saving Image %s\n", filename);
-    fp = fopen(filename, "w");
+    fp = fopen(filename, "wb");
     if (!fp) {
         printf("cannot open file for writing");
         exit(0);
@@ -176,10 +162,10 @@ void SavePNMImage(Image *temp_image, char *filename) {
 
     //strcpy(comment,"#Created by Dr Mohamed N. Ahmed");
 
-    if (temp_image->Type == GRAY) {  // Gray (pgm)
+    if (temp_image->Type == 1) {  // Gray (pgm)
         fprintf(fp, "P5\n");
         size = temp_image->Width * temp_image->Height;
-    } else if (temp_image->Type == COLOR) {  // Color (ppm)
+    } else if (temp_image->Type == 2) {  // Color (ppm)
         fprintf(fp, "P6\n");
         size = temp_image->Width * temp_image->Height * 3;
     }
@@ -206,13 +192,13 @@ void SavePNMImage(Image *temp_image, char *filename) {
 
 Image *CreateNewImage(Image *image, char *comment) {
     Image *outimage;
-    int size, j;
+    int size = 0, j;
 
     outimage = (Image *) malloc(sizeof(Image));
 
     outimage->Type = image->Type;
-    if (outimage->Type == GRAY) { size = image->Width * image->Height; }
-    else if (outimage->Type == COLOR) { size = image->Width * image->Height * 3; }
+    if (outimage->Type == 1) { size = image->Width * image->Height; }
+    else if (outimage->Type == 2) { size = image->Width * image->Height * 3; }
 
     outimage->Width = image->Width;
     outimage->Height = image->Height;

@@ -11,3 +11,5 @@
 using namespace cv;
 
 Mat imgRead(char *filename);
+
+int TestReadImage(char *, char *);
