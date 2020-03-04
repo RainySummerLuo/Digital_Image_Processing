@@ -21,19 +21,6 @@ int lab1_2_1(char *filename) {
 }
 
 int lab1_2_2(char *filename) {
-    Mat srcImage = cv::imread(filename);
-    if (!srcImage.data) {
-        return 1;
-    }
-    Mat greyImage;
-    cvtColor(srcImage, greyImage, COLOR_BGR2GRAY);
-    namedWindow("Lena Image - Grey 1");
-    imshow("Lena Image - Grey 1", greyImage);
-    waitKey(1000);
-    return 0;
-}
-
-int lab1_2_3(char *filename) {
     IplImage *srcImg;
     srcImg = cvvLoadImage(filename);
     if (!srcImg) {
@@ -43,5 +30,18 @@ int lab1_2_3(char *filename) {
     cvCvtColor(srcImg, greyImage, CV_BGR2GRAY);
     cvvShowImage("Lena Image - Grey 2", greyImage);
     waitKey(3000);
+    return 0;
+}
+
+int lab1_2_3(char *filename) {
+    Mat srcImage = cv::imread(filename);
+    if (!srcImage.data) {
+        return 1;
+    }
+    Mat greyImage;
+    cvtColor(srcImage, greyImage, COLOR_BGR2GRAY);
+    namedWindow("Lena Image - Grey 1");
+    imshow("Lena Image - Grey 1", greyImage);
+    waitKey(1000);
     return 0;
 }
