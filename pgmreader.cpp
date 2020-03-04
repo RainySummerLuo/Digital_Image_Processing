@@ -5,7 +5,7 @@
 #include <cctype>
 
 #include "io.hpp"
-#include "proto.hpp"
+#include "pgmreader.hpp"
 
 int TestReadImage(char *filename, char *outfilename) {
     Image *image;

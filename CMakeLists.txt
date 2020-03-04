@@ -10,7 +10,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-set(SOURCE_FILES main.cpp lab1.cpp lab1.hpp io.cpp io.hpp proto.hpp pgmreader.cpp)
+set(SOURCE_FILES main.cpp lab1.cpp lab1.hpp io.cpp io.hpp pgmreader.hpp pgmreader.cpp)
 add_executable(Lab ${SOURCE_FILES})
 
 # linking

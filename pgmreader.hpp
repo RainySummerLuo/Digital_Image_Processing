@@ -1,5 +1,5 @@
-#ifndef LAB_PROTO_HPP
-#define LAB_PROTO_HPP
+#ifndef LAB_PGMREADER_HPP
+#define LAB_PGMREADER_HPP
 
 typedef struct Image {
     int Width;
@@ -15,4 +15,4 @@ Image *SwapImage(Image *);
 Image *ReadPNMImage(char *);
 Image *CreateNewImage(Image *, char *comment);
 
-#endif //LAB_PROTO_HPP
+#endif //LAB_PGMREADER_HPP
