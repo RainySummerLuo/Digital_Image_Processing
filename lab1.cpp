@@ -1,12 +1,8 @@
-//
-// Created by rainy on 2020/3/4.
-//
-
 #include "io.h"
 
 using namespace cv;
 
-int lab1_2_1(char *filename) {
+int lab2_2_1(char *filename) {
     printf("OpenCV: Hello, world!\n");
     Mat image = imread(filename);
     if (image.empty()) {
@@ -20,7 +16,7 @@ int lab1_2_1(char *filename) {
     return 0;
 }
 
-int lab1_2_2(char *filename) {
+int lab2_2_2(char *filename) {
     IplImage *srcImg;
     srcImg = cvvLoadImage(filename);
     if (!srcImg) {
@@ -33,7 +29,7 @@ int lab1_2_2(char *filename) {
     return 0;
 }
 
-int lab1_2_3(char *filename) {
+int lab2_2_3(char *filename) {
     Mat srcImage = cv::imread(filename);
     if (!srcImage.data) {
         return 1;
