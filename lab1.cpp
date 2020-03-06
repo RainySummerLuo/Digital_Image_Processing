@@ -78,6 +78,8 @@ int lab1_1(char *srcFilename, char *outFilename) {
     avgFilter(inImage, outImageAvg);
 
     SavePNMImage(outImageAvg, outFilename);
+
+    return 0;
 }
 
 int lab1_2(char *srcFilename, char *outFilename) {
@@ -92,6 +94,8 @@ int lab1_2(char *srcFilename, char *outFilename) {
     medFilter(inImage, outImageMed);
 
     SavePNMImage(outImageMed, outFilename);
+
+    return 0;
 }
 
 int lab2_2_1(char *filename) {
