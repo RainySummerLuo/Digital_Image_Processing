@@ -26,8 +26,21 @@ Mat imgCreate(Mat &srcImg, double factorN) {
 int imgSave(const Mat &image, const string &filename) {
     int i = srcFilename.rfind('.');
     int j = srcFilename.rfind('/');
-    string name = srcFilename.substr(0, j) + "/output/" + filename + srcFilename.substr(i);
-    imwrite(name, image);
+    string name = srcFilename.substr(0, j) + "/output/" + filename + "_" + srcFilename.substr(j + 1);
+    vector<int> imwrite_params;
+    Mat cvtImg;
+    if (toLowerCase(srcFilename.substr(i)) == ".pgm") {
+        imwrite_params.push_back(CV_IMWRITE_PXM_BINARY);
+        imwrite_params.push_back(0);
+        cvtColor(image, cvtImg, CV_BGR2GRAY);
+    } else if (toLowerCase(srcFilename.substr(i)) == ".pgm") {
+        imwrite_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+        imwrite_params.push_back(100);
+        cvtImg = image.clone();
+    } else {
+        cvtImg = image.clone();
+    }
+    imwrite(name, cvtImg, imwrite_params);
     return 0;
 }
 
