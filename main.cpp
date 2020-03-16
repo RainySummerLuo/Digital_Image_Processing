@@ -4,7 +4,7 @@
 #include "lab2.hpp"
 
 int main() {
-    char srcFile[] = "../pic/lena.bmp";
+    char srcFile[] = "../pic/lab2/lena.pgm";
     srcFilename = srcFile;
     /*
     char filename_lena_pgm[] = "../pic/lab1/lena.pgm";
