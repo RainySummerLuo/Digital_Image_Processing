@@ -2,9 +2,10 @@
 
 #include "lab1.hpp"
 #include "lab2.hpp"
+#include "lab3.hpp"
 
 int main() {
-    char srcFile[] = "../pic/lab2/lena.pgm";
+    char srcFile[] = "../pic/lab3/lena.pgm";
     srcFilename = srcFile;
     /*
     char filename_lena_pgm[] = "../pic/lab1/lena.pgm";
@@ -32,6 +33,11 @@ int main() {
     //imgEnlarge_bilinear_interpolation(srcImg, 2);
     //imgEnlarge_bicubic_interpolation(srcImg, 2);
     //imgEnlarge_fractional_linear_expansion(srcImg, 2);
-    imgNegative(srcImg);
+    //imgNegative(srcImg);
+
+    imgTranslation(srcImg, 50, 30);
+    //imgRotation(srcImg, 45);
+    //imgShear_x(srcImg, CV_PI / 3);
+    //imgShear_y(srcImg, CV_PI/3);
     return 0;
 }

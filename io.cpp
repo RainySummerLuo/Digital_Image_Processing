@@ -23,6 +23,12 @@ Mat imgCreate(Mat &srcImg, double factorN) {
     return outImg;
 }
 
+Mat imgCreate(Mat &srcImg, int cols, int rows) {
+    Mat outImg = Mat();
+    outImg.create(rows, cols, srcImg.type());
+    return outImg;
+}
+
 int imgSave(const Mat &image, const string &filename) {
     int i = srcFilename.rfind('.');
     int j = srcFilename.rfind('/');
@@ -47,7 +53,7 @@ int imgSave(const Mat &image, const string &filename) {
 int imgShow(const string &winname, Mat &img) {
     namedWindow(winname);
     imshow(winname, img);
-    waitKey(1000);
+    waitKey(3000);
     return 0;
 }
 

@@ -19,6 +19,8 @@ Mat imgRead(char *filename);
 
 Mat imgCreate(Mat &srcImg, double factorN);
 
+Mat imgCreate(Mat &srcImg, int width, int height);
+
 int imgSave(const Mat &image, const string &filename_output);
 
 int imgShow(const string &winname, Mat &img);

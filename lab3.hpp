@@ -7,13 +7,13 @@
 
 #endif //LAB_LAB3_HPP
 
-int image_translation(Mat &srcImg);
+int imgTranslation(Mat &srcImg, int dx, int dy);
 
-int image_rotation(Mat &srcImg);
+int imgRotation(Mat &srcImg, double degree);
 
-int shear_operations_vertical(Mat &srcImg);
+int imgShear_x(Mat &srcImg, double ratio);
 
-int shear_operations_horizontal(Mat &srcImg);
+int imgShear_y(Mat &srcImg, double ratio);
 
 int smoothing_3x3_averaging(Mat &srcImg);
 
