@@ -3,6 +3,7 @@
 #include "lab1.hpp"
 #include "lab2.hpp"
 #include "lab3.hpp"
+#include "lab4.hpp"
 
 int main() {
     char srcFile[] = "../pic/lab3/lena.pgm";
@@ -35,9 +36,11 @@ int main() {
     //imgEnlarge_fractional_linear_expansion(srcImg, 2);
     //imgNegative(srcImg);
 
-    imgTranslation(srcImg, 50, 30);
+    //imgTranslation(srcImg, 50, 30);
     //imgRotation(srcImg, 45);
     //imgShear_x(srcImg, CV_PI / 3);
     //imgShear_y(srcImg, CV_PI/3);
+
+    imgSharpen_Laplacian(srcImg);
     return 0;
 }
