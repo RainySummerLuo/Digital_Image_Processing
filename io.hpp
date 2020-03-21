@@ -17,6 +17,8 @@ extern string srcFilename;
 
 Mat imgRead(char *filename);
 
+Mat imgCreate(Mat &srcImg);
+
 Mat imgCreate(Mat &srcImg, double factorN);
 
 Mat imgCreate(Mat &srcImg, int width, int height);

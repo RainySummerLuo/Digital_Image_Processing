@@ -41,6 +41,10 @@ int main() {
     //imgShear_x(srcImg, CV_PI / 3);
     //imgShear_y(srcImg, CV_PI/3);
 
-    imgSharpen_Laplacian(srcImg);
+    //imgSharpen_Laplacian(srcImg);
+    //imgSharpen_Sobel(srcImg);
+    //imgCorrection_GammaCorrection(srcImg, 1.5);
+    imgEnhancement_Histogram_Local(srcImg, 32);
+    //imgEnhancement_Histogram_Global(srcImg);
     return 0;
 }

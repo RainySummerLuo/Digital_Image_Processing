@@ -15,6 +15,14 @@ Mat imgRead(char *filename) {
     return image;
 }
 
+Mat imgCreate(Mat &srcImg) {
+    int imgRow = srcImg.rows;
+    int imgCol = srcImg.cols;
+    Mat outImg = Mat();
+    outImg.create((int) imgRow, (int) imgCol, srcImg.type());
+    return outImg;
+}
+
 Mat imgCreate(Mat &srcImg, double factorN) {
     int imgRow = srcImg.rows;
     int imgCol = srcImg.cols;
