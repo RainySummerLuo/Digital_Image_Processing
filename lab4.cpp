@@ -31,6 +31,7 @@ int imgSharpen_Laplacian(Mat &srcImg) {
         }
     }
     imgShow("Image Sharpen", outImg);
+    imgSave("ImageSharpen_Laplacian", outImg);
     return 0;
 }
 
@@ -64,6 +65,7 @@ int imgSharpen_Sobel(Mat &srcImg) {
         }
     }
     imgShow("Image Sharpen", outImg);
+    imgSave("ImageSharpen_Sobel", outImg);
     return 0;
 }
 
@@ -79,6 +81,7 @@ int imgCorrection_GammaCorrection(Mat &srcImg, double gamma) {
         }
     }
     imgShow("Image Gamma Correction", outImg);
+    imgSave("ImageGammaCorrection", outImg);
     return 0;
 }
 
@@ -120,6 +123,7 @@ int imgEnhancement_Histogram_Local(Mat &srcImg, int kSize) {
         }
     }
     imgShow("Image Histogram Local", outImg);
+    imgSave("ImageHistogram_Local", outImg);
     return 0;
 }
 
@@ -156,5 +160,6 @@ int imgEnhancement_Histogram_Global(Mat &srcImg) {
         }
     }
     imgShow("Image Histogram Global", outImg);
+    imgSave("ImageHistogram_Global", outImg);
     return 0;
 }

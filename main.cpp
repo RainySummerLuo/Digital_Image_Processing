@@ -6,7 +6,7 @@
 #include "lab4.hpp"
 
 int main() {
-    char srcFile[] = "../pic/lab3/lena.pgm";
+    char srcFile[] = "../pic/lab4/moon.png";
     srcFilename = srcFile;
     /*
     char filename_lena_pgm[] = "../pic/lab1/lena.pgm";
@@ -44,7 +44,7 @@ int main() {
     //imgSharpen_Laplacian(srcImg);
     //imgSharpen_Sobel(srcImg);
     //imgCorrection_GammaCorrection(srcImg, 1.5);
-    imgEnhancement_Histogram_Local(srcImg, 32);
+    //imgEnhancement_Histogram_Local(srcImg, 32);
     //imgEnhancement_Histogram_Global(srcImg);
     return 0;
 }
