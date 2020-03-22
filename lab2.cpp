@@ -4,8 +4,8 @@ int imgReduce_alternative_line(Mat &srcImg, double reduceN) {
     Mat outImg = imgCreate(srcImg, reduceN);
     for (size_t imgOutRow = 0; imgOutRow < outImg.rows; ++imgOutRow) {
         for (size_t imgOutCol = 0; imgOutCol < outImg.cols; ++imgOutCol) {
-            int imgSrcRow = (int) round(imgOutRow / reduceN);
-            int imgSrcCol = (int) round(imgOutCol / reduceN);
+            int imgSrcRow = (int) cvRound(imgOutRow / reduceN);
+            int imgSrcCol = (int) cvRound(imgOutCol / reduceN);
             auto &srcPixel = srcImg.at<Vec3b>(imgSrcRow, imgSrcCol);
             auto &outPixel = outImg.at<Vec3b>(imgOutRow, imgOutCol);
             outPixel = srcPixel;
@@ -69,8 +69,8 @@ int imgEnlarge_nearest_neighbor_interpolation(Mat &srcImg, double enlargeN) {
         for (size_t imgOutCol = 0; imgOutCol < outImg.cols; ++imgOutCol) {
             double xp = imgOutRow / enlargeN;
             double yp = imgOutCol / enlargeN;
-            int x1 = (int) round(xp);
-            int y1 = (int) round(yp);
+            int x1 = (int) cvRound(xp);
+            int y1 = (int) cvRound(yp);
             int x = 0;
             int y = 0;
             if (abs(x1 - xp) > 0.5) {

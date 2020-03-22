@@ -70,16 +70,16 @@ int imgShear_x(Mat &srcImg, double ratio) {
     int outRows = srcRows;
     int outCols = 0;
     double tanA = tan(ratio);
-    outCols = (int) round(srcCols + srcRows / tanA);
+    outCols = (int) cvRound(srcCols + srcRows / tanA);
     Mat outImg = imgCreate(srcImg, outCols, outRows);
     for (int i = 0; i < outRows; i++) {
         for (int j = 0; j < outCols; j++) {
             auto &pixelOut = outImg.at<Vec3b>(i, j);
-            int shiftX = (int) round((outRows - i) / tanA);
+            int shiftX = (int) cvRound((outRows - i) / tanA);
             if (j < shiftX || j > shiftX + srcCols) {
                 pixelOut = 0;
             } else {
-                pixelOut = srcImg.at<Vec3b>(i, (int) round(j - shiftX));
+                pixelOut = srcImg.at<Vec3b>(i, (int) cvRound(j - shiftX));
             }
         }
     }
@@ -94,16 +94,16 @@ int imgShear_y(Mat &srcImg, double ratio) {
     int outRows = 0;
     int outCols = srcCols;
     double tanA = tan(ratio);
-    outRows = (int) round(srcRows + srcCols / tanA);
+    outRows = (int) cvRound(srcRows + srcCols / tanA);
     Mat outImg = imgCreate(srcImg, outCols, outRows);
     for (int i = 0; i < outRows; i++) {
         for (int j = 0; j < outCols; j++) {
             auto &pixelOut = outImg.at<Vec3b>(i, j);
-            int shiftY = (int) round((outCols - j) / tanA);
+            int shiftY = (int) cvRound((outCols - j) / tanA);
             if (i < shiftY || i > shiftY + srcCols) {
                 pixelOut = 0;
             } else {
-                pixelOut = srcImg.at<Vec3b>((int) round(i - shiftY), j);
+                pixelOut = srcImg.at<Vec3b>((int) cvRound(i - shiftY), j);
             }
         }
     }

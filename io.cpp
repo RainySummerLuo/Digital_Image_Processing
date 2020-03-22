@@ -71,7 +71,7 @@ int pixelSaturation(double value) {
     } else if (value > 255) {
         return 255;
     } else {
-        return (int) round(value);
+        return (int) cvRound(value);
     }
 }
 
