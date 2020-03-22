@@ -20,7 +20,7 @@ int imgTranslation(Mat &srcImg, int dx, int dy) {
         }
     }
     imgShow("Image Translation", outImg);
-    imgSave(outImg, "ImageTranslation");
+    imgSave("ImageTranslation", outImg);
     return 0;
 }
 
@@ -60,7 +60,7 @@ int imgRotation(Mat &srcImg, double angle) {
         }
     }
     imgShow("Image Rotation", outImg);
-    imgSave(outImg, "ImageRotation_45");
+    imgSave("ImageRotation_45", outImg);
     return 0;
 }
 
@@ -84,7 +84,7 @@ int imgShear_x(Mat &srcImg, double ratio) {
         }
     }
     imgShow("Image Shear", outImg);
-    imgSave(outImg, "ImageShear_X");
+    imgSave("ImageShear_X", outImg);
     return 0;
 }
 
@@ -108,7 +108,7 @@ int imgShear_y(Mat &srcImg, double ratio) {
         }
     }
     imgShow("Image Shear", outImg);
-    imgSave(outImg, "ImageShear_Y");
+    imgSave("ImageShear_Y", outImg);
     return 0;
 }
 

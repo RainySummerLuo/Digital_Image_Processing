@@ -12,7 +12,7 @@ int imgReduce_alternative_line(Mat &srcImg, double reduceN) {
         }
     }
     imgShow("Lena Image - Reduce", outImg);
-    imgSave(outImg, "ImageReduce_alternative_line");
+    imgSave("ImageReduce_alternative_line", outImg);
     return 0;
 }
 
@@ -43,7 +43,7 @@ int imgReduce_fractional_linear_reduction(Mat &srcImg, double reduceN) {
         }
     }
     imgShow("Lena Image - Reduce", outImg);
-    imgSave(outImg, "ImageReduce_fractional_linear_reduction");
+    imgSave("ImageReduce_fractional_linear_reduction", outImg);
     return 0;
 }
 
@@ -59,7 +59,7 @@ int imgEnlarge_pixel_replication(Mat &srcImg, double enlargeN) {
         }
     }
     imgShow("Lena Image - Enlargement", outImg);
-    imgSave(outImg, "ImageEnlarge_pixel_replication");
+    imgSave("ImageEnlarge_pixel_replication", outImg);
     return 0;
 }
 
@@ -89,7 +89,7 @@ int imgEnlarge_nearest_neighbor_interpolation(Mat &srcImg, double enlargeN) {
         }
     }
     imgShow("Lena Image - Enlargement", outImg);
-    imgSave(outImg, "ImageEnlarge_nearest_neighbor_interpolation");
+    imgSave("ImageEnlarge_nearest_neighbor_interpolation", outImg);
     return 0;
 }
 
@@ -127,7 +127,7 @@ int imgEnlarge_bilinear_interpolation(Mat &srcImg, double enlargeN) {
         }
     }
     imgShow("Lena Image - Enlargement", outImg);
-    imgSave(outImg, "ImageEnlarge_bilinear_interpolation");
+    imgSave("ImageEnlarge_bilinear_interpolation", outImg);
     return 0;
 }
 
@@ -177,7 +177,7 @@ int imgEnlarge_bicubic_interpolation(Mat &srcImg, double enlargeN) {
         }
     }
     imgShow("Lena Image - Enlargement", outImg);
-    imgSave(outImg, "ImageEnlarge_bicubic_interpolation");
+    imgSave("ImageEnlarge_bicubic_interpolation", outImg);
     return 0;
 }
 
@@ -214,7 +214,7 @@ int imgEnlarge_fractional_linear_expansion(Mat &srcImg, double enlargeN) {
         }
     }
     imgShow("Lena Image - Enlargement", outImg);
-    imgSave(outImg, "ImageEnlarge_fractional_linear_expansion");
+    imgSave("ImageEnlarge_fractional_linear_expansion", outImg);
     return 0;
 }
 
@@ -240,6 +240,6 @@ int imgNegative(Mat &srcImg) {
         }
     }
     imgShow("Lena Image - Negative", outImg);
-    imgSave(outImg, "ImageNegative");
+    imgSave("ImageNegative", outImg);
     return 0;
 }
