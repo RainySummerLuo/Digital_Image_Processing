@@ -1,6 +1,7 @@
 #include "io.hpp"
 
 #include <opencv2/opencv.hpp>
+#include <direct.h>
 
 using namespace std;
 using namespace cv;
@@ -37,31 +38,42 @@ Mat imgCreate(Mat &srcImg, int cols, int rows) {
     return outImg;
 }
 
-int imgSave(const Mat &image, const string &filename) {
+int imgSave(const string &filename, const Mat &image) {
     int i = srcFilename.rfind('.');
     int j = srcFilename.rfind('/');
-    string name = srcFilename.substr(0, j) + "/output/" + filename + "_" + srcFilename.substr(j + 1);
+    string path = srcFilename.substr(0, j) + "/output/";
+    string name = path + filename + "_" + srcFilename.substr(j + 1);
+    if (0 != access(path.c_str(), 0)) {
+        // if this folder not exist, create a new one.
+        mkdir(path.c_str());
+    }
     vector<int> imwrite_params;
     Mat cvtImg;
-    if (toLowerCase(srcFilename.substr(i)) == ".pgm") {
-        imwrite_params.push_back(CV_IMWRITE_PXM_BINARY);
-        imwrite_params.push_back(0);
-        cvtColor(image, cvtImg, CV_BGR2GRAY);
-    } else if (toLowerCase(srcFilename.substr(i)) == ".pgm") {
-        imwrite_params.push_back(CV_IMWRITE_JPEG_QUALITY);
-        imwrite_params.push_back(100);
-        cvtImg = image.clone();
-    } else {
-        cvtImg = image.clone();
-    }
-    imwrite(name, cvtImg, imwrite_params);
+    string file_ext = toLowerCase(srcFilename.substr(i));
+//    if (file_ext == ".pgm" || file_ext == ".ppm" || file_ext == ".pbm") {
+//        imwrite_params.push_back(CV_IMWRITE_PXM_BINARY);
+//        imwrite_params.push_back(0);
+//        cvtColor(image, cvtImg, CV_BGR2GRAY);
+//    } else if (file_ext == ".jpg" || file_ext == ".jpeg") {
+//        imwrite_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+//        imwrite_params.push_back(100);
+//        cvtImg = image.clone();
+//    } else if (file_ext == ".png") {
+//        imwrite_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+//        imwrite_params.push_back(3);
+//        cvtImg = image.clone();
+//    } else {
+//        cvtImg = image.clone();
+//    }
+    cvtImg = image.clone();
+    imwrite(name, cvtImg);
     return 0;
 }
 
 int imgShow(const string &winname, Mat &img) {
     namedWindow(winname);
     imshow(winname, img);
-    waitKey(3000);
+    waitKey(1000);
     return 0;
 }
 

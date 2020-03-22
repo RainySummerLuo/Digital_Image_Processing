@@ -23,7 +23,7 @@ Mat imgCreate(Mat &srcImg, double factorN);
 
 Mat imgCreate(Mat &srcImg, int width, int height);
 
-int imgSave(const Mat &image, const string &filename_output);
+int imgSave(const string &filename, const Mat &image);
 
 int imgShow(const string &winname, Mat &img);
 
