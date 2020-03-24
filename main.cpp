@@ -6,7 +6,8 @@
 #include "lab4.hpp"
 
 int main() {
-    char srcFile[] = "../pic/lab4/moon.png";
+    //char srcFile[] = "../pic/lab4/lena.png";
+    char srcFile[] = "../pic/lab4/test.tif";
     srcFilename = srcFile;
     /*
     char filename_lena_pgm[] = "../pic/lab1/lena.pgm";
@@ -43,8 +44,8 @@ int main() {
 
     //imgSharpen_Laplacian(srcImg);
     //imgSharpen_Sobel(srcImg);
-    //imgCorrection_GammaCorrection(srcImg, 1.5);
-    //imgEnhancement_Histogram_Local(srcImg, 32);
-    //imgEnhancement_Histogram_Global(srcImg);
+    //imgCorrection_GammaCorrection(srcImg, 1);
+    //imgEnhancement_Histogram_Local(srcImg, 6);
+    imgEnhancement_Histogram_Global(srcImg);
     return 0;
 }

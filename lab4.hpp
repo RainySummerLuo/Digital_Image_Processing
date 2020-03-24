@@ -13,6 +13,6 @@ int imgSharpen_Sobel(Mat &srcImg);
 
 int imgCorrection_GammaCorrection(Mat &srcImg, double gamma);
 
-int imgEnhancement_Histogram_Local(Mat &srcImg, int kSize);
+int imgEnhancement_Histogram_Local(Mat &srcImg, double kSize);
 
 int imgEnhancement_Histogram_Global(Mat &srcImg);

@@ -10,9 +10,9 @@ int imgSharpen_Laplacian(Mat &srcImg) {
     int srcRows = srcImg.rows;
     cvtColor(srcImg, srcImg, COLOR_RGB2GRAY);
     Mat outImg = imgCreate(srcImg, 1);
-    float kernel[3][3] = {0.f, 1.f, 0.f, 1.f, -4.f, 1.f, 0.f, 1.f, 0.f};
+    float kernel[3][3] = {0.f, -1.f, 0.f, -1.f, 4.f, -1.f, 0.f, -1.f, 0.f};
     //float kernel[3][3] = {1.f, 1.f, 1.f, 1.f, -8.f, 1.f, 1.f, 1.f, 1.f};
-    //float kernel[3][3] = {0.f, -1.f, 0.f, -1.f, 4.f, -1.f, 0.f, -1.f, 0.f};
+    //float kernel[3][3] = {0.f, 1.f, 0.f, 1.f, -4.f, 1.f, 0.f, 1.f, 0.f};
     //float kernel[3][3] = {-1.f, 1.f, -1.f, 1.f, 8.f, -1.f, -1.f, 1.f, -1.f};
     for (int i = 0; i < srcRows; ++i) {
         for (int j = 0; j < srcCols; ++j) {
@@ -27,7 +27,7 @@ int imgSharpen_Laplacian(Mat &srcImg) {
             }
             int srcPixel = srcImg.at<uchar>(i, j);
             auto &pixelOut = outImg.at<uchar>(i, j);
-            pixelOut = pixelSaturation((float) srcPixel - sum);
+            pixelOut = pixelSaturation((float) srcPixel + sum);
         }
     }
     imgShow("Image Sharpen", outImg);
@@ -51,17 +51,29 @@ int imgSharpen_Sobel(Mat &srcImg) {
             auto &pixelOut = outImg.at<uchar>(i, j);
             int gx = 0;
             int gy = 0;
+            double sum = 0;
+            double threshold = 0.75;
             for (int l = i - 1; l <= i + 1; l++) {
                 for (int k = j - 1; k <= j + 1; k++) {
                     if (l >= 0 && k >= 0 && l < srcRows && k < srcCols) {
                         auto &srcPixel = srcImg.at<uchar>(l, k);
-                        gx += srcPixel * kernel_gx[l - i + 1][k - j + 1];
-                        gy += srcPixel * kernel_gy[l - i + 1][k - j + 1];
+                        //gx += srcPixel * kernel_gx[l - i + 1][k - j + 1];
+                        //gy += srcPixel * kernel_gy[l - i + 1][k - j + 1];
+                        gx = srcImg.at<uchar>(i - 1, j + 1) + 2 * srcImg.at<uchar>(i, j + 1) +
+                             srcImg.at<uchar>(i + 1, j + 1)
+                             - srcImg.at<uchar>(i - 1, j - 1) - 2 * srcImg.at<uchar>(i, j - 1) -
+                             srcImg.at<uchar>(i - 1, j - 1);
+                        gy = srcImg.at<uchar>(i - 1, j + 1) + 2 * srcImg.at<uchar>(i - 1, j) +
+                             srcImg.at<uchar>(i + 1, j + 1)
+                             - srcImg.at<uchar>(i - 1, j - 1) - 2 * srcImg.at<uchar>(i + 1, j) -
+                             srcImg.at<uchar>(i - 1, j - 1);
                     }
                 }
             }
             //pixelOut = sqrt(pow(gx, 2) + pow(gy, 2));
-            pixelOut = pixelSaturation(srcImg.at<uchar>(i, j) - sqrt(pow(gx, 2) + pow(gy, 2)));
+            sum = sqrt(pow(gx, 2) + pow(gy, 2));
+            sum = sum >= 255 * threshold ? 255 : 0;
+            pixelOut = pixelSaturation(srcImg.at<uchar>(i, j) - sum);
         }
     }
     imgShow("Image Sharpen", outImg);
@@ -80,12 +92,28 @@ int imgCorrection_GammaCorrection(Mat &srcImg, double gamma) {
             pixelOut = pixelSaturation(pow((double) (srcImg.at<uchar>(i, j) / 255.0), gamma) * 255.0f);
         }
     }
+    double mean = 0;
+    double deviance = 0;
+    int sum = 0;
+    for (int i = 1; i < srcRows; i++) {
+        for (int j = 1; j < srcCols; j++) {
+            sum += outImg.at<uchar>(i, j);
+        }
+    }
+    mean = ((double) sum) / (srcCols * srcRows);
+    for (int i = 1; i < srcRows; i++) {
+        for (int j = 1; j < srcCols; j++) {
+            deviance += pow(outImg.at<uchar>(i, j) - mean, 2);
+        }
+    }
+    deviance = deviance / (srcCols * srcRows);
+    cout << deviance << endl;
     imgShow("Image Gamma Correction", outImg);
-    imgSave("ImageGammaCorrection", outImg);
+    imgSave("ImageGammaCorrection_1", outImg);
     return 0;
 }
 
-int imgEnhancement_Histogram_Local(Mat &srcImg, int kSize) {
+int imgEnhancement_Histogram_Local(Mat &srcImg, double kSize) {
     int srcCols = srcImg.cols;
     int srcRows = srcImg.rows;
     cvtColor(srcImg, srcImg, COLOR_RGB2GRAY);
@@ -104,7 +132,7 @@ int imgEnhancement_Histogram_Local(Mat &srcImg, int kSize) {
                 }
             }
             for (int i = 0; i < 256; i++) {
-                hist_prob[i] = (double)hist[i] / n;
+                hist_prob[i] = (double) hist[i] / n;
             }
             for (int i = 0; i < 256; i++) {
                 if (i == 0) {
@@ -143,7 +171,7 @@ int imgEnhancement_Histogram_Global(Mat &srcImg) {
         }
     }
     for (int i = 0; i < 256; i++) {
-        hist_prob[i] = (double)hist[i] / n;
+        hist_prob[i] = (double) hist[i] / n;
     }
     for (int i = 0; i < 256; i++) {
         if (i == 0) {
