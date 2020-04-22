@@ -4,10 +4,12 @@
 #include "lab2.hpp"
 #include "lab3.hpp"
 #include "lab4.hpp"
+#include "lab5.hpp"
+#include "lab6.hpp"
 
 int main() {
     //char srcFile[] = "../pic/lab4/lena.png";
-    char srcFile[] = "../pic/lab4/test.tif";
+    char srcFile[] = "../pic/lab5/noise.png";
     srcFilename = srcFile;
     /*
     char filename_lena_pgm[] = "../pic/lab1/lena.pgm";
@@ -40,12 +42,17 @@ int main() {
     //imgTranslation(srcImg, 50, 30);
     //imgRotation(srcImg, 45);
     //imgShear_x(srcImg, CV_PI / 3);
-    //imgShear_y(srcImg, CV_PI/3);
+    //imgShear_y(srcImg, CV_PI / 3);
 
     //imgSharpen_Laplacian(srcImg);
     //imgSharpen_Sobel(srcImg);
     //imgCorrection_GammaCorrection(srcImg, 1);
     //imgEnhancement_Histogram_Local(srcImg, 6);
-    imgEnhancement_Histogram_Global(srcImg);
+    //imgEnhancement_Histogram_Global(srcImg);
+
+    //img2D_DFT(srcImg);
+    imgReconstruct(srcImg);
+
+    //imgHPF_fingerprint(srcImg);
     return 0;
 }

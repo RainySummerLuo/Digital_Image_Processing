@@ -50,22 +50,22 @@ int imgSave(const string &filename, const Mat &image) {
     vector<int> imwrite_params;
     Mat cvtImg;
     string file_ext = toLowerCase(srcFilename.substr(i));
-//    if (file_ext == ".pgm" || file_ext == ".ppm" || file_ext == ".pbm") {
-//        imwrite_params.push_back(CV_IMWRITE_PXM_BINARY);
-//        imwrite_params.push_back(0);
-//        cvtColor(image, cvtImg, CV_BGR2GRAY);
-//    } else if (file_ext == ".jpg" || file_ext == ".jpeg") {
-//        imwrite_params.push_back(CV_IMWRITE_JPEG_QUALITY);
-//        imwrite_params.push_back(100);
-//        cvtImg = image.clone();
-//    } else if (file_ext == ".png") {
-//        imwrite_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
-//        imwrite_params.push_back(3);
-//        cvtImg = image.clone();
-//    } else {
-//        cvtImg = image.clone();
-//    }
-    cvtImg = image.clone();
+    if (file_ext == ".pgm" || file_ext == ".ppm" || file_ext == ".pbm") {
+        imwrite_params.push_back(CV_IMWRITE_PXM_BINARY);
+        imwrite_params.push_back(0);
+        cvtImg = image.clone();
+    } else if (file_ext == ".jpg" || file_ext == ".jpeg") {
+        imwrite_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+        imwrite_params.push_back(100);
+        cvtImg = image.clone();
+    } else if (file_ext == ".png") {
+        imwrite_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+        imwrite_params.push_back(0);
+        cvtImg = image.clone();
+    } else {
+        cvtImg = image.clone();
+    }
+    //cvtImg = image.clone();
     imwrite(name, cvtImg);
     return 0;
 }
