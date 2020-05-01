@@ -7,6 +7,10 @@
 
 #endif //LAB_LAB6_HPP
 
+void dftt(Mat &src, Mat &dst);
+
 int imgHPF_fingerprint(Mat &srcImg);
 
-void zero_to_center(Mat &freq_plane);
+int imgHomomorphic(Mat &srcImg);
+
+int imgCorrelation(Mat &srcImg1, Mat &temImg2);

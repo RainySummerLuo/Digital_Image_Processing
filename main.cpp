@@ -8,8 +8,9 @@
 #include "lab6.hpp"
 
 int main() {
-    //char srcFile[] = "../pic/lab4/lena.png";
-    char srcFile[] = "../pic/lab5/noise.png";
+    //char srcFile[] = "../pic/lab5/lena.png";
+    char srcFile[] = "../pic/lab6/temp.jpg";
+    char srcFile2[] = "../pic/lab6/temp2.jpg";
     srcFilename = srcFile;
     /*
     char filename_lena_pgm[] = "../pic/lab1/lena.pgm";
@@ -30,6 +31,7 @@ int main() {
     */
 
     Mat srcImg = imgRead(srcFile);
+    Mat temImg = imgRead(srcFile2);
     //imgReduce_alternative_line(srcImg, 0.5);
     //imgReduce_fractional_linear_reduction(srcImg, 0.5);
     //imgEnlarge_pixel_replication(srcImg, 2);
@@ -51,8 +53,10 @@ int main() {
     //imgEnhancement_Histogram_Global(srcImg);
 
     //img2D_DFT(srcImg);
-    imgReconstruct(srcImg);
+    //imgReconstruct(srcImg);
 
     //imgHPF_fingerprint(srcImg);
+    //imgHomomorphic(srcImg);
+    imgCorrelation(srcImg, temImg);
     return 0;
 }

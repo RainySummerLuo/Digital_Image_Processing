@@ -38,7 +38,7 @@ Mat imgCreate(Mat &srcImg, int cols, int rows) {
     return outImg;
 }
 
-int imgSave(const string &filename, const Mat &image) {
+int imgSave(const string &filename, const Mat &img) {
     int i = srcFilename.rfind('.');
     int j = srcFilename.rfind('/');
     string path = srcFilename.substr(0, j) + "/output/";
@@ -53,19 +53,18 @@ int imgSave(const string &filename, const Mat &image) {
     if (file_ext == ".pgm" || file_ext == ".ppm" || file_ext == ".pbm") {
         imwrite_params.push_back(CV_IMWRITE_PXM_BINARY);
         imwrite_params.push_back(0);
-        cvtImg = image.clone();
+        cvtImg = img.clone();
     } else if (file_ext == ".jpg" || file_ext == ".jpeg") {
         imwrite_params.push_back(CV_IMWRITE_JPEG_QUALITY);
         imwrite_params.push_back(100);
-        cvtImg = image.clone();
+        cvtImg = img.clone();
     } else if (file_ext == ".png") {
         imwrite_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
         imwrite_params.push_back(0);
-        cvtImg = image.clone();
+        cvtImg = img.clone();
     } else {
-        cvtImg = image.clone();
+        cvtImg = img.clone();
     }
-    //cvtImg = image.clone();
     imwrite(name, cvtImg);
     return 0;
 }

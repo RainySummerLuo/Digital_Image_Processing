@@ -5,87 +5,158 @@
 #include "io.hpp"
 #include "lab6.hpp"
 
-int imgHPF_fingerprint(Mat &srcImg) {
-    resize(srcImg, srcImg, Size(), 0.25, 0.25);
-    srcImg.convertTo(srcImg, CV_32F);
-    cvtColor(srcImg, srcImg, CV_RGB2GRAY);
-
+void dftt(Mat &src, Mat &dst) {
     Mat padded;
-    int m = getOptimalDFTSize(srcImg.rows);
-    int n = getOptimalDFTSize(srcImg.cols);
-
-    copyMakeBorder(srcImg, padded, 0, m - srcImg.rows, 0, n - srcImg.cols, BORDER_CONSTANT, Scalar::all(0));
-
+    int m = getOptimalDFTSize(src.rows);
+    int n = getOptimalDFTSize(src.cols);
+    copyMakeBorder(src, padded, 0, m - src.rows, 0, n - src.cols, BORDER_CONSTANT, Scalar::all(0));
     Mat planes[] = {Mat_<float>(padded), Mat::zeros(padded.size(), CV_32F)};
     Mat complexI;
     merge(planes, 2, complexI);
     dft(complexI, complexI);
+    dst = complexI;
+    dst = dst(Rect(0, 0, complexI.cols & -2, complexI.rows & -2));
+}
 
-    split(complexI, planes);
+int imgHPF_fingerprint(Mat &srcImg) {
+    srcImg.convertTo(srcImg, CV_32F);
+    cvtColor(srcImg, srcImg, CV_RGB2GRAY);
 
-    zero_to_center(planes[0]);
-    zero_to_center(planes[1]);
+    int n = 4;
 
-    magnitude(planes[0], planes[1], planes[0]);
+    Mat mag;
+    dftt(srcImg, mag);
+    int cx = mag.cols / 2;
+    int cy = mag.rows / 2;
+    Mat tmp;
+    Mat q0(mag, Rect(0, 0, cx, cy));
+    Mat q1(mag, Rect(cx, 0, cx, cy));
+    Mat q2(mag, Rect(0, cy, cx, cy));
+    Mat q3(mag, Rect(cx, cy, cx, cy));
+    q0.copyTo(tmp);
+    q3.copyTo(q0);
+    tmp.copyTo(q3);
 
-    divide(planes[0], n * m, planes[0]);
+    q1.copyTo(tmp);
+    q2.copyTo(q1);
+    tmp.copyTo(q2);
+    double D0 = 50.0;
+    double h;
 
-    Mat butter_sharpen(padded.size(), CV_32F);
-    float D0 = 50.;
-    int nn = 4;
-    for (int i = 0; i < butter_sharpen.rows; i++) {
-        auto *q = butter_sharpen.ptr<float>(i);
-        for (int j = 0; j < butter_sharpen.cols; j++) {
-            auto d = (float) sqrt(pow(i - n / 2, 2) + pow(j - m / 2, 2));
-            q[2 * j] = 1.0 / (1 + pow(D0 / d, 2 * nn));
-            q[2 * j + 1] = 1.0 / (1 + pow(D0 / d, 2 * nn));
+    for (int y = 0; y < mag.rows; y++) {
+        auto *data = mag.ptr<float>(y);
+        int j = 0;
+        for (int x = 0; x < mag.cols; x++) {
+            double d = sqrt(pow((y - cy), 2) + pow((x - cx), 2));
+            if (d == 0) { h = 0.0; }
+            else { h = 1.0 / (1.0 + pow((D0 / d), 2 * n)); }
+            data[x + j] = data[x] * h;
+            data[x + j + 1] = data[x + j + 1] * h;
+            j += 1;
         }
     }
 
-    merge(planes, 2, complexI);
+    q0.copyTo(tmp);
+    q3.copyTo(q0);
+    tmp.copyTo(q3);
+    q1.copyTo(tmp);
+    q2.copyTo(q1);
+    tmp.copyTo(q2);
 
-    multiply(complexI, butter_sharpen, complexI);
-
-    idft(complexI, complexI);
-
-    Mat dstSharpen[2];
-    split(complexI, dstSharpen);
-
-    for (int i = 0; i < n; i++) {
-        auto *q = dstSharpen[0].ptr<float>(i);
-        for (int j = 0; j < m; j++) {
-            q[j] = q[j] * pow(-1, i + j);
-        }
-    }
-    Mat show;
-
-    normalize(dstSharpen[0], show, 1, 0, CV_MINMAX);
-
-    show = show(Rect(0, 0, srcImg.cols, srcImg.rows));
-
-    threshold(dstSharpen[0], dstSharpen[0], 0, 255, THRESH_BINARY);
-    normalize(dstSharpen[0], dstSharpen[0], 0, 1, CV_MINMAX);
-    dstSharpen[0] = dstSharpen[0](Rect(0, 0, srcImg.cols, srcImg.rows));
-    imgShow("dstSharpen", dstSharpen[0]);
-    waitKey(2000);
+    Mat invDFT, invDFTcvt;
+    idft(mag, invDFT, DFT_SCALE | DFT_REAL_OUTPUT);
+    Mat dst;
+    threshold(invDFT, dst, 0, 255, 0);
+    dst.convertTo(invDFTcvt, CV_8U);
+    Mat dstImg(invDFTcvt, Rect(0, 0, srcImg.cols, srcImg.rows));
+    imgShow("HPF-Fingerprint", dstImg);
+    imgSave("imgHPF_Fingerprint", dstImg);\
     return 0;
 }
 
-void zero_to_center(Mat &freq_plane) {
-    int cx = freq_plane.cols / 2;
-    int cy = freq_plane.rows / 2;
+double pixelDistance(double u, double v) {
+    return std::sqrt(u * u + v * v);
+}
 
-    Mat part1_r(freq_plane, Rect(0, 0, cx, cy)); //元素坐标表示为(cx,cy)
-    Mat part2_r(freq_plane, Rect(cx, 0, cx, cy));
-    Mat part3_r(freq_plane, Rect(0, cy, cx, cy));
-    Mat part4_r(freq_plane, Rect(cx, cy, cx, cy));
+double gaussianCoeff(double u, double v, double d0) {
+    double d = pixelDistance(u, v);
+    return 1.0 - std::exp((-d * d) / (2 * d0 * d0));
+}
 
-    Mat tmp;
-    part1_r.copyTo(tmp); //左上与右下交换位置(实部)
-    part4_r.copyTo(part1_r);
-    tmp.copyTo(part4_r);
+int imgHomomorphic(Mat &srcImg) {
+    srcImg.convertTo(srcImg, CV_32F);
+    cvtColor(srcImg, srcImg, CV_RGB2GRAY);
 
-    part2_r.copyTo(tmp); //右上与左下交换位置(实部)
-    part3_r.copyTo(part2_r);
-    tmp.copyTo(part3_r);
+    log(srcImg + 1, srcImg);
+
+    Mat padded;
+    int m = getOptimalDFTSize(srcImg.rows);
+    int n = getOptimalDFTSize(srcImg.cols);
+    copyMakeBorder(srcImg, padded, 0, m - srcImg.rows, 0, n - srcImg.cols, BORDER_CONSTANT, Scalar::all(0));
+
+    Mat fourierImage;
+
+    dct(padded, fourierImage);
+
+    int sigma = 3;
+    Point2f center;
+    center.x = (float) fourierImage.rows / 2;
+    center.y = (float) fourierImage.cols / 2;
+
+    Mat gaussFilter = Mat::zeros(fourierImage.rows, fourierImage.cols, CV_32F);
+    for (int row = 0; row < fourierImage.rows; row++) {
+        for (int col = 0; col < fourierImage.cols; col++) {
+            gaussFilter.at<float>(row, col) = gaussianCoeff(row, col, sigma);
+        }
+    }
+
+    fourierImage = fourierImage.mul(gaussFilter);
+
+    Mat dstImg;
+    idct(fourierImage, dstImg, DFT_INVERSE);
+
+    exp(dstImg - 1, dstImg);
+
+    imgShow("Img Homomorphic", dstImg);
+
+    imgSave("imgHomomorphic", dstImg * 255);
+    return 0;
+}
+
+int imgCorrelation(Mat &srcImg, Mat &temImg) {
+    Mat img_display;
+    srcImg.copyTo(img_display);
+
+    int result_cols = srcImg.cols - temImg.cols + 1;
+    int result_rows = srcImg.rows - temImg.rows + 1;
+
+    Mat dstImg;
+
+    dstImg.create(result_rows, result_cols, CV_32F);
+
+    int method = 5;
+    matchTemplate(srcImg, temImg, dstImg, method);
+    normalize(dstImg, dstImg, 0, 1, NORM_MINMAX, -1, Mat());
+
+    double minVal;
+    double maxVal;
+    Point minLoc;
+    Point maxLoc;
+    Point matchLoc;
+
+    minMaxLoc(dstImg, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
+
+    if (method == CV_TM_SQDIFF || method == CV_TM_SQDIFF_NORMED) {
+        matchLoc = minLoc;
+    } else {
+        matchLoc = maxLoc;
+    }
+
+    cout << "Similarity: " << maxVal  * 100 << "%" << endl;
+
+    rectangle(img_display, matchLoc, Point(matchLoc.x + temImg.cols, matchLoc.y + temImg.rows), Scalar::all(0), 2, 8, 0);
+
+    imgShow("dis", img_display);
+    imgSave("imgCorrelation", img_display);
+    return 0;
 }
