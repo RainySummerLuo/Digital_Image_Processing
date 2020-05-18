@@ -109,3 +109,99 @@ double bicubic_sw(double x) {
     }
     return sw;
 }
+
+void convertRGB2GRAY(const Mat &srcImg, Mat &dstImg) {
+    if (!srcImg.data || srcImg.channels() != 3) {
+        return;
+    }
+    dstImg = Mat::zeros(srcImg.size(), CV_8U);
+    uchar *pointSrcImg = srcImg.data;
+    uchar *pointDstImg = dstImg.data;
+    int stepImage = srcImg.step;
+    int stepImageGray = dstImg.step;
+    for (int i = 0; i < dstImg.rows; i++) {
+        for (int j = 0; j < dstImg.cols; j++) {
+            pointDstImg[i * stepImageGray + j] =
+                    0.114 * pointSrcImg[i * stepImage + 3 * j] +
+                    0.587 * pointSrcImg[i * stepImage + 3 * j + 1] +
+                    0.299 * pointSrcImg[i * stepImage + 3 * j + 2];
+        }
+    }
+}
+
+int findMedian(vector<int>& nums) {
+    int median = nums[0];
+    int count = 0;
+    for (auto const& num: nums) {
+        if (num > median) {
+            median = num;
+            count++;
+        }
+        if (count == 5) {
+            break;
+        }
+    }
+    return median;
+}
+
+int findMin(vector<int>& nums) {
+    int min = nums[0];
+    int count = 0;
+    for (auto const& num: nums) {
+        if (min > num) {
+            min = num;
+            count++;
+        }
+        if (count == 5) {
+            break;
+        }
+    }
+    return min;
+}
+
+int findMax(vector<int>& nums) {
+    int max = nums[0];
+    int count = 0;
+    for (auto const& num: nums) {
+        if (max < num) {
+            max = num;
+            count++;
+        }
+        if (count == 5) {
+            break;
+        }
+    }
+    return max;
+}
+
+int meanVector(vector<int>& nums, int tSize) {
+    int mean = 0;
+    for (int i = 0; i < tSize; ++i) {
+        int min = nums[0];
+        int minIndex = 0;
+        int max = nums[0];
+        int maxIndex = 0;
+        for (int j = 0; j < nums.size(); ++j) {
+            int num = nums[j];
+            if(num > max) {
+                max = num;
+                maxIndex = j;
+            }
+        }
+        nums.erase(nums.begin() + maxIndex);
+        for (int j = 0; j < nums.size(); ++j) {
+            int num = nums[j];
+            if(num < min) {
+                min = num;
+                minIndex = j;
+            }
+        }
+        nums.erase(nums.begin() + minIndex);
+    }
+    int sum = 0;
+    for (int j = 0; j < nums.size(); ++j) {
+        sum += nums[j];
+    }
+    mean = pixelSaturation((double)sum / nums.size());
+    return mean;
+}

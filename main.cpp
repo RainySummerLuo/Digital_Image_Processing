@@ -6,11 +6,12 @@
 #include "lab4.hpp"
 #include "lab5.hpp"
 #include "lab6.hpp"
+#include "lab7.hpp"
+#include "courseproject.hpp"
 
 int main() {
-    //char srcFile[] = "../pic/lab5/lena.png";
-    char srcFile[] = "../pic/lab6/temp.jpg";
-    char srcFile2[] = "../pic/lab6/temp2.jpg";
+    char srcFile[] = "../pic/lab7/cameraWithNoise.png";
+    //char srcFile2[] = "../pic/lab6/temp2.jpg";
     srcFilename = srcFile;
     /*
     char filename_lena_pgm[] = "../pic/lab1/lena.pgm";
@@ -25,38 +26,44 @@ int main() {
     lab1_1(filename_noise_pgm, filename_noise_out_1);
     lab1_2(filename_noise_pgm, filename_noise_out_2);
 
-    // lab2_2_1(filename_src);
-    // lab2_2_2(filename_src);
-    // lab2_2_3(filename_src);
+    lab2_2_1(filename_src);
+    lab2_2_2(filename_src);
+    lab2_2_3(filename_src);
     */
-
     Mat srcImg = imgRead(srcFile);
-    Mat temImg = imgRead(srcFile2);
-    //imgReduce_alternative_line(srcImg, 0.5);
-    //imgReduce_fractional_linear_reduction(srcImg, 0.5);
-    //imgEnlarge_pixel_replication(srcImg, 2);
-    //imgEnlarge_nearest_neighbor_interpolation(srcImg, 2);
-    //imgEnlarge_bilinear_interpolation(srcImg, 2);
-    //imgEnlarge_bicubic_interpolation(srcImg, 2);
-    //imgEnlarge_fractional_linear_expansion(srcImg, 2);
-    //imgNegative(srcImg);
+    //Mat temImg = imgRead(srcFile2);
+    /*
+    imgReduce_alternative_line(srcImg, 0.5);
+    imgReduce_fractional_linear_reduction(srcImg, 0.5);
+    imgEnlarge_pixel_replication(srcImg, 2);
+    imgEnlarge_nearest_neighbor_interpolation(srcImg, 2);
+    imgEnlarge_bilinear_interpolation(srcImg, 2);
+    imgEnlarge_bicubic_interpolation(srcImg, 2);
+    imgEnlarge_fractional_linear_expansion(srcImg, 2);
+    imgNegative(srcImg);
 
-    //imgTranslation(srcImg, 50, 30);
-    //imgRotation(srcImg, 45);
-    //imgShear_x(srcImg, CV_PI / 3);
-    //imgShear_y(srcImg, CV_PI / 3);
+    imgTranslation(srcImg, 50, 30);
+    imgRotation(srcImg, 45);
+    imgShear_x(srcImg, CV_PI / 3);
+    imgShear_y(srcImg, CV_PI / 3);
 
-    //imgSharpen_Laplacian(srcImg);
-    //imgSharpen_Sobel(srcImg);
-    //imgCorrection_GammaCorrection(srcImg, 1);
-    //imgEnhancement_Histogram_Local(srcImg, 6);
-    //imgEnhancement_Histogram_Global(srcImg);
+    imgSharpen_Laplacian(srcImg);
+    imgSharpen_Sobel(srcImg);
+    imgCorrection_GammaCorrection(srcImg, 1);
+    imgEnhancement_Histogram_Local(srcImg, 6);
+    imgEnhancement_Histogram_Global(srcImg);
 
-    //img2D_DFT(srcImg);
-    //imgReconstruct(srcImg);
+    img2D_DFT(srcImg);
+    imgReconstruct(srcImg);
 
-    //imgHPF_fingerprint(srcImg);
-    //imgHomomorphic(srcImg);
+    imgHPF_fingerprint(srcImg);
+    imgHomomorphic(srcImg);
     imgCorrelation(srcImg, temImg);
+    */
+    // Lab 7
+    imgNoiseReduction(srcImg);
+
+    // Course Project
+    //imgCannyEdge(srcImg);
     return 0;
 }

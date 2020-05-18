@@ -34,3 +34,13 @@ int pixelSaturation(int value);
 double bicubic_sw(double x);
 
 int TestReadImage(char *, char *);
+
+void convertRGB2GRAY(const Mat &, Mat &);
+
+int findMedian(vector<int>& nums);
+
+int findMin(vector<int>& nums);
+
+int findMax(vector<int>& nums);
+
+int meanVector(vector<int>&, int);
