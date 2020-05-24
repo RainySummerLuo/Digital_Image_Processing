@@ -9,11 +9,11 @@
 
 int imgCannyEdge(Mat &);
 
-void cannyEdge_origin_opencv(Mat &, Mat &, double, double, int);
+void cannyEdge_opencv(const Mat&, Mat &, double, double, int, bool);
 
-void cannyEdge_origin_custom(Mat &, Mat &, double, double, int);
+void cannyEdge_opencv_modified(const Mat&, Mat &, double, double, int, bool);
 
-void cannyEdge_origin(Mat &, Mat &, int, float);
+void cannyEdge_customized(Mat &, Mat &, double, double, int, bool);
 
 void gaussianBlur(Mat &, Mat &);
 
@@ -21,14 +21,4 @@ float** gaussKernel(int, float);
 
 void deleteKernel(float**, int);
 
-void xyGradient(Mat &, Mat &);
-
-Mat x_gradient(const Mat&);
-
-Mat y_gradient(const Mat&);
-
-void nonMaximumSuppression(Mat &, Mat &);
-
-void threshold(Mat &, Mat &, double, double);
-
-void linkage(Mat, Mat);
+void xyGradient(Mat &, Mat &, bool, const Mat&, const Mat&, double, double);

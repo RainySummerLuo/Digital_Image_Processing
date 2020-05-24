@@ -8,64 +8,97 @@ int imgCannyEdge(Mat &srcImg) {
     float threshold1 = 70;
     float threshold2 = 140;
     int apertureSize = 3;
+    bool L2gradient = true;
+
+    int cols = srcImg.cols;
+    int rows = srcImg.rows;
 
     TickMeter tm;
 
-    Mat dstImg_origin_opencv = Mat(srcImg.rows, srcImg.cols, CV_8U, Scalar(0));
+    Mat dstImg_opencv = Mat(rows, cols, CV_8U, Scalar(0));
     tm.start();
-    cannyEdge_origin_opencv(srcImg, dstImg_origin_opencv, threshold1, threshold2, apertureSize);
+    cannyEdge_opencv(srcImg, dstImg_opencv, threshold1, threshold2, apertureSize, L2gradient);
     tm.stop();
-    cout << "Timing: " << tm.getTimeMilli() << "ms" << endl;
+    cout << "Time elapsed: " << tm.getTimeMilli() << "ms" << endl;
 
     tm.reset();
 
-    Mat dstImg_origin_custom = Mat(srcImg.rows, srcImg.cols, CV_8U, Scalar(0));
+    Mat dstImg_opencv_modified = Mat(rows, cols, CV_8U, Scalar(0));
     tm.start();
-    cannyEdge_origin_custom(srcImg, dstImg_origin_custom, threshold1, threshold2, apertureSize);
+    cannyEdge_opencv_modified(srcImg, dstImg_opencv_modified, threshold1, threshold2, apertureSize, L2gradient);
     tm.stop();
-    cout << "Timing: " << tm.getTimeMilli() << "ms" << endl;
+    cout << "Time elapsed: " << tm.getTimeMilli() << "ms" << endl;
 
-    imshow("srcImg", srcImg);
-    imshow("Result Img Origin OpenCV", dstImg_origin_opencv);
-    imshow("Result Img Origin Custom", dstImg_origin_custom);
+    tm.reset();
+
+    Mat dstImg_custom = Mat(rows, cols, CV_8U, Scalar(0));
+    tm.start();
+    cannyEdge_customized(srcImg, dstImg_custom, threshold1, threshold2, apertureSize, L2gradient);
+    tm.stop();
+    cout << "Time elapsed: " << tm.getTimeMilli() << "ms" << endl;
+
+    imshow("Source Image", srcImg);
+    imshow("Result Image - OpenCV", dstImg_opencv);
+    imshow("Result Image - OpenCV Modified", dstImg_opencv_modified);
+    imshow("Result Image - Customized", dstImg_custom);
     waitKey(0);
     return 0;
 }
 
-void cannyEdge_origin_opencv(Mat &srcImg, Mat &dstImg, double threshold1, double threshold2, int apertureSize) {
-    cvtColor(srcImg, srcImg, CV_RGB2GRAY);
-    Canny(srcImg, dstImg, threshold1, threshold2, apertureSize, false);
+void cannyEdge_opencv(const Mat& srcImg, Mat &dstImg, double threshold1, double threshold2, int apertureSize,
+                             bool L2gradient) {
+    int cols = srcImg.cols;
+    int rows = srcImg.rows;
+    Mat gryImg = Mat(rows, cols, CV_8U, Scalar(0));
+    convertRGB2GRAY(srcImg, gryImg);
+    Mat dstImg_edge = Mat(rows, cols, CV_8U, Scalar(0));
+    blur(srcImg, dstImg_edge, Size(3, 3));
+    Canny(dstImg_edge, dstImg, threshold1, threshold2, apertureSize, L2gradient);
+    //srcImg.copyTo(dstImg, dstImg_edge);
 }
 
-void cannyEdge_origin_custom(Mat &srcImg, Mat &dstImg, double threshold1, double threshold2, int apertureSize) {
-    Mat gryImg = Mat(srcImg.rows, srcImg.cols, CV_8U, Scalar(0));
+void cannyEdge_opencv_modified(const Mat& srcImg, Mat &dstImg, double threshold1, double threshold2, int apertureSize,
+                             bool L2gradient) {
+    int cols = srcImg.cols;
+    int rows = srcImg.rows;
+    Mat gryImg = Mat(rows, cols, CV_8U, Scalar(0));
+    convertRGB2GRAY(srcImg, gryImg);
+    Mat dstImg_edge = Mat(rows, cols, CV_8U, Scalar(0));
+    dstImg_edge = gryImg.clone();
+    Canny(dstImg_edge, dstImg, threshold1, threshold2, apertureSize, L2gradient);
+    //srcImg.copyTo(dstImg, dstImg_edge);
+}
+
+void cannyEdge_customized(Mat& srcImg, Mat &dstImg, double threshold1, double threshold2, int apertureSize,
+                          bool L2gradient) {
+    int cols = srcImg.cols;
+    int rows = srcImg.rows;
+    Mat gryImg = Mat(rows, cols, CV_8U, Scalar(0));
     convertRGB2GRAY(srcImg, gryImg);
 
-    Mat gasImg = Mat(srcImg.rows, srcImg.cols, CV_8U, Scalar(0));
-    gaussianBlur(srcImg, gasImg);
+    Mat blrImg = Mat(rows, cols, CV_8U, Scalar(0));
+    //gaussianBlur(srcImg, gasImg);
+    GaussianBlur(gryImg, blrImg, cvSize(apertureSize, apertureSize), 0, 0);
 
-    Mat xygImg = Mat(srcImg.rows, srcImg.cols, CV_8U, Scalar(0));
-    Mat xyGrad = Mat(srcImg.rows, srcImg.cols, CV_8U, Scalar(0));
-    Mat thGrad = Mat(srcImg.rows, srcImg.cols, CV_8U, Scalar(0));
-    xyGradient(gasImg, xygImg);
+    Mat xygImg = Mat(rows, cols, CV_8U, Scalar(0));
+    //Mat xyGrad = Mat(rows, cols, CV_8U, Scalar(0));
+    //Mat thGrad = Mat(rows, cols, CV_8U, Scalar(0));
+    Mat Sx = (cv::Mat_<double>(3, 3) <<
+                                     -1, 0, 1,
+            -2, 0, 2,
+            -1, 0, 1
+    );
+    Mat Sy = (cv::Mat_<double>(3, 3) <<
+                                     1, 2, 1,
+            0, 0, 0,
+            -1, -2, -1
+    );
+    xyGradient(blrImg, xygImg, L2gradient, Sx, Sy, threshold1, threshold2);
 
-    Mat nmsImg = Mat(srcImg.rows, srcImg.cols, CV_8U, Scalar(0));
-    nonMaximumSuppression(xygImg, nmsImg);
-
-    Mat trsImg = Mat(srcImg.rows, srcImg.cols, CV_8U, Scalar(0));
-    threshold(nmsImg, trsImg, threshold1, threshold2);
-
-    imshow("", trsImg);
-    waitKey(0);
-
-    Mat lnkImg = Mat(srcImg.rows, srcImg.cols, CV_8U, Scalar(0));
-    linkage(trsImg, lnkImg);
-    dstImg = lnkImg.clone();
+    dstImg = xygImg.clone();
 }
 
-void cannyEdge_origin2(Mat &dstImg, Mat &srcImg, int k, float lambda) {
-}
-
+/*
 void gaussianBlur(Mat &srcImg, Mat &dstImg) {
     int cols = srcImg.cols;
     int rows = srcImg.rows;
@@ -91,6 +124,7 @@ void gaussianBlur(Mat &srcImg, Mat &dstImg) {
     deleteKernel(kernel, 3);
     dstImg = gasImg.clone();
 }
+*/
 
 float **gaussKernel(int k, float sigma) {
     float **M;
@@ -124,114 +158,190 @@ void deleteKernel(float **M, int k) {
     delete[] M;
 }
 
-void xyGradient(Mat &srcImg, Mat &dstImg) {
+void xyGradient(Mat &srcImg, Mat &dstImg, bool L2gradient, const Mat &Sx, const Mat &Sy, double min_thresh,
+                double max_thresh) {
     int cols = srcImg.cols;
     int rows = srcImg.rows;
 
-    Mat x_gra = x_gradient(srcImg);
-    Mat y_gra = y_gradient(srcImg);
-    dstImg = Mat(rows, cols, CV_8U, Scalar(0));
+    Rect rect;
+    rect.width = 3;
+    rect.height = 3;
+    Mat xGra = Mat(rows, cols, CV_8U, Scalar(0));
+    Mat yGra = Mat(rows, cols, CV_8U, Scalar(0));
+
     for (int i = 0; i < rows - 1; i++) {
         for (int j = 0; j < cols - 1; j++) {
-            dstImg.at<uchar>(i, j) = sqrt(
-                    (x_gra.at<uchar>(i, j) * x_gra.at<uchar>(i, j)) + (y_gra.at<uchar>(i, j) * y_gra.at<uchar>(i, j)));
-            if (dstImg.at<uchar>(i, j) > 255) {
-                dstImg.at<uchar>(i, j) = 255;
+            int a0 = srcImg.at<uchar>(i - 1, j - 1);
+            int a1 = srcImg.at<uchar>(i - 1, j);
+            int a2 = srcImg.at<uchar>(i - 1, j + 1);
+            int a3 = srcImg.at<uchar>(i, j - 1);
+            int a4 = srcImg.at<uchar>(i, j);
+            int a5 = srcImg.at<uchar>(i, j + 1);
+            int a6 = srcImg.at<uchar>(i + 1, j - 1);
+            int a7 = srcImg.at<uchar>(i + 1, j);
+            int a8 = srcImg.at<uchar>(i + 1, j + 1);
+            xGra.at<uchar>(i, j) = abs(
+                    -1 * a0 + 0 * a1 + 1 * a2 +
+                    -2 * a3 + 0 * a4 + 2 * a5 +
+                    -1 * a6 + 0 * a7 + 1 * a8
+            );
+            yGra.at<uchar>(i, j) = abs(
+                    1 * a0 + 2 * a1 + 1 * a2 +
+                    0 * a3 + 0 * a4 + 0 * a5 +
+                    -1 * a6 + -2 * a7 + -1 * a8
+            );
+        }
+    }
+
+    Mat grdImg = Mat(rows, cols, CV_8U, Scalar(0));
+    if (L2gradient) {
+        for (int i = 0; i < rows - 1; i++) {
+            for (int j = 0; j < cols - 1; j++) {
+                grdImg.at<uchar>(i, j) = pixelSaturation(
+                        sqrt(pow(xGra.at<uchar>(i, j), 2) + pow(yGra.at<uchar>(i, j), 2)));
+            }
+        }
+    } else {
+        for (int i = 0; i < rows - 1; i++) {
+            for (int j = 0; j < cols - 1; j++) {
+                grdImg.at<uchar>(i, j) = pixelSaturation(abs(xGra.at<uchar>(i, j) + abs(yGra.at<uchar>(i, j))));
             }
         }
     }
-}
 
-Mat x_gradient(const Mat &img) {
-    Mat img_src = img.clone();
-    int cols = img_src.cols;
-    int rows = img_src.rows;
-    Mat x_gra = Mat(rows, cols, CV_8U, Scalar(0));
-    for (int i = 0; i < rows - 1; i++) {
-        for (int j = 0; j < cols - 1; j++) {
-            x_gra.at<uchar>(i, j) =
-                    abs(img_src.at<uchar>(i, j) - img_src.at<uchar>(i + 1, j) + img_src.at<uchar>(i, j + 1) -
-                        img_src.at<uchar>(i + 1, j + 1)) / 2;
-        }
-    }
-    return x_gra;
-}
+    // TODO convertScaleAbs()?
+    convertScaleAbs(grdImg, grdImg);
 
-Mat y_gradient(const Mat &img) {
-    Mat img_src = img.clone();
-    int cols = img_src.cols;
-    int rows = img_src.rows;
-    Mat y_gra = Mat(rows, cols, CV_8U, Scalar(0));
-    for (int i = 0; i < rows - 1; i++) {
-        for (int j = 0; j < cols - 1; j++) {
-            y_gra.at<uchar>(i, j) = abs(
-                    img_src.at<uchar>(i, j) - img_src.at<uchar>(i, j + 1) + img_src.at<uchar>(i + 1, j) -
-                    img_src.at<uchar>(i + 1, j + 1));
-        }
-    }
-    return y_gra;
-}
-
-void nonMaximumSuppression(Mat &srcImg, Mat &dstImg) {
-    int cols = srcImg.cols;
-    int rows = srcImg.rows;
-    Mat gra_nms = Mat(rows, cols, CV_8U, Scalar(0));
+    Mat thdImg = Mat(rows, cols, CV_8U, Scalar(0));
+    Mat locImg = Mat(rows, cols, CV_8U, Scalar(0));
     for (int i = 1; i < rows - 1; i++) {
         for (int j = 1; j < cols - 1; j++) {
-            int val00 = srcImg.at<uchar>(i - 1, j - 1);
-            int val01 = srcImg.at<uchar>(i - 1, j);
-            int val02 = srcImg.at<uchar>(i - 1, j + 1);
-            int val10 = srcImg.at<uchar>(i, j - 1);
-            int val11 = srcImg.at<uchar>(i, j);
-            int val12 = srcImg.at<uchar>(i, j + 1);
-            int val20 = srcImg.at<uchar>(i + 1, j - 1);
-            int val21 = srcImg.at<uchar>(i + 1, j);
-            int val22 = srcImg.at<uchar>(i + 1, j + 1);
-            if (val11 < val00 | val11 < val01 | val11 < val02 |
-                val11 < val10 | val11 < val12 | val11 < val21 |
-                val11 < val22 | val11 < val20) {
-                srcImg.at<uchar>(i, j) = 0;
+            thdImg.at<uchar>(i, j) = atan2(yGra.at<uchar>(i, j), xGra.at<uchar>(i, j));
+            int thdPixel = thdImg.at<uchar>(i, j);
+            if (0 <= thdPixel || thdPixel <= (CV_PI / 4.0)) {
+                locImg.at<uchar>(i, j) = 0;
+            } else if (CV_PI / 4.0 < thdPixel || thdPixel <= (CV_PI / 2.0)) {
+                locImg.at<uchar>(i, j) = 1;
+            } else if (-1 * CV_PI / 2.0 <= thdPixel || thdPixel <= (-1 * CV_PI / 4.0)) {
+                locImg.at<uchar>(i, j) = 2;
+            } else if (-1 * CV_PI / 4.0 < thdPixel || thdPixel < 0) {
+                locImg.at<uchar>(i, j) = 3;
             }
         }
     }
-    dstImg = srcImg.clone();
-}
 
-void threshold(Mat &srcImg, Mat &dstImg, double min_thresh, double max_thresh) {
-    int cols = srcImg.cols;
-    int rows = srcImg.rows;
+    double grdMax;
+    minMaxLoc(grdImg, &grdMax);
+    if (grdMax != 0) {
+        grdImg = grdImg / grdMax;
+    }
+
+    Mat xygImg = grdImg.clone();
+    Mat nmsImg = Mat(rows, cols, CV_8U, Scalar(0));
+    for (int i = 1; i < rows - 1; i++) {
+        for (int j = 1; j < cols - 1; j++) {
+            // int x = xGra.at<int>(i, j);
+            // int y = yGra.at<int>(i, j);
+            int a0 = xygImg.at<uchar>(i - 1, j - 1);
+            int a1 = xygImg.at<uchar>(i - 1, j);
+            int a2 = xygImg.at<uchar>(i - 1, j + 1);
+            int a3 = xygImg.at<uchar>(i, j - 1);
+            // int a4 = xygImg.at<uchar>(i, j);
+            int a5 = xygImg.at<uchar>(i, j + 1);
+            int a6 = xygImg.at<uchar>(i + 1, j - 1);
+            int a7 = xygImg.at<uchar>(i + 1, j);
+            int a8 = xygImg.at<uchar>(i + 1, j + 1);
+            double gp1, gp2;
+
+            double angle = abs(tan(thdImg.at<uchar>(i, j)));
+            switch ((int) locImg.at<uchar>(i, j)) {
+                case 0:
+                    gp1 = (1 - angle) * a5 + angle * a2;
+                    gp2 = (1 - angle) * a3 + angle * a6;
+                    break;
+                case 1:
+                    gp1 = (1 - angle) * a1 + angle * a2;
+                    gp2 = (1 - angle) * a7 + angle * a6;
+                    break;
+                case 2:
+                    gp1 = (1 - angle) * a1 + angle * a0;
+                    gp2 = (1 - angle) * a7 + angle * a8;
+                    break;
+                case 3:
+                    gp1 = (1 - angle) * a3 + angle * a0;
+                    gp2 = (1 - angle) * a5 + angle * a8;
+                    break;
+                default:
+                    break;
+            }
+
+            auto &grdPixel = grdImg.at<uchar>(i, j);
+            auto &nmsPixel = nmsImg.at<uchar>(i, j);
+            if (grdImg.at<uchar>(i, j) >= gp1 && grdImg.at<uchar>(i, j) >= gp2) {
+                if (grdPixel >= max_thresh) {
+                    grdPixel = max_thresh;
+                    nmsPixel = 255;
+                } else if (grdPixel < min_thresh) {
+                    grdPixel = 0;
+                } else {
+                    grdPixel = min_thresh;
+                }
+            } else {
+                grdPixel = 0;
+            }
+            /*
+            double angle = atan2(y, x) * 180 / CV_PI;
+            // 0
+            if (abs(angle) < 22.5 || abs(angle) >= 157.5) {
+                if (a4 >= a3 && a4 >= a5) {
+                    nmsPixel = a4;
+                } else {
+                    nmsPixel = 0;
+                }
+            }
+            // 45
+            if (abs(angle) >= 22.5 && abs(angle) < 67.5) {
+                if (a4 >= a0 && a4 >= a8) {
+                    nmsPixel = a4;
+                } else {
+                    nmsPixel = 0;
+                }
+            }
+            // 90
+            if (abs(angle) >= 67.5 && abs(angle) < 112.5) {
+                if (a4 >= a1 && a4 >= a7) {
+                    nmsPixel = a4;
+                } else {
+                    nmsPixel = 0;
+                }
+            }
+            // 135
+            if (angle >= 112.5 && angle < 157.5) {
+                if (a4 >= a2 && a4 >= a6) {
+                    nmsPixel = a4;
+                } else {
+                    nmsPixel = 0;
+                }
+            }
+            */
+        }
+    }
+
     for (int i = 1; i < rows; i++) {
         for (int j = 1; j < cols; j++) {
-            if (srcImg.at<uchar>(i, j) > max_thresh) {
-                srcImg.at<uchar>(i, j) = 255;
-            }
-            if (srcImg.at<uchar>(i, j) < min_thresh) {
-                srcImg.at<uchar>(i, j) = 0;
-            }
-        }
-    }
-    dstImg = srcImg.clone();
-}
-
-void linkage(Mat srcImg, Mat dstImg) {
-    int cols = srcImg.cols;
-    int rows = srcImg.rows;
-    Mat img_l = Mat(rows, cols, CV_8U, Scalar(0));
-    for (int i = 1; i < rows - 1; i++) {
-        for (int j = 1; j < cols - 1; j++) {
-            if ((srcImg.at<uchar>(i - 1, j - 1) == 255) |
-                (srcImg.at<uchar>(i - 1, j) == 255) |
-                (srcImg.at<uchar>(i - 1, j + 1) == 255) |
-                (srcImg.at<uchar>(i, j - 1) == 255) |
-                (srcImg.at<uchar>(i, j + 1) == 255) |
-                (srcImg.at<uchar>(i + 1, j - 1) == 255) |
-                (srcImg.at<uchar>(i + 1, j) == 255) |
-                (srcImg.at<uchar>(i + 1, j + 1) == 255)) {
-                img_l.at<uchar>(i, j) = 255;
-            } else {
-                img_l.at<uchar>(i, j) = srcImg.at<uchar>(i, j);
+            int dotPixel = grdImg.at<uchar>(i, j);
+            auto &nmsPixel = nmsImg.at<uchar>(i, j);
+            if (dotPixel == min_thresh) {
+                for (int k = -1; k < 1; k++) {
+                    for (int l = -1; l < 1; l++) {
+                        if (grdImg.at<uchar>(i + k, j + l) == max_thresh) {
+                            nmsPixel = 255;
+                            continue;
+                        }
+                    }
+                }
             }
         }
     }
-    dstImg = img_l.clone();
+    dstImg = nmsImg.clone();
 }

@@ -10,7 +10,7 @@
 #include "courseproject.hpp"
 
 int main() {
-    char srcFile[] = "../pic/lab7/cameraWithNoise.png";
+    char srcFile[] = "../pic/cp/lena.png";
     //char srcFile2[] = "../pic/lab6/temp2.jpg";
     srcFilename = srcFile;
     /*
@@ -61,9 +61,9 @@ int main() {
     imgCorrelation(srcImg, temImg);
     */
     // Lab 7
-    imgNoiseReduction(srcImg);
+    //imgNoiseReduction(srcImg);
 
     // Course Project
-    //imgCannyEdge(srcImg);
+    imgCannyEdge(srcImg);
     return 0;
 }
