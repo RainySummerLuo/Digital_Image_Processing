@@ -63,7 +63,6 @@ int main() {
     // Lab 7
     //imgNoiseReduction(srcImg);
 
-    // Course Project
-    imgCannyEdge(srcImg);
+    
     return 0;
 }
